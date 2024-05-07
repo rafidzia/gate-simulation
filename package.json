@@ -8,6 +8,7 @@
   "dependencies": {
     "@types/node": "^20.12.7",
     "dotenv": "^16.4.5",
+    "jackd": "^2.2.2",
     "typescript": "^5.4.5"
   },
   "scripts": {
