@@ -8,7 +8,8 @@ Kedua parameter tersebut untuk konfigurasi target server.
 
 
 clientPerWorker => jumlah klien dalam satu worker
-worker => jumlah worker
+
+workerCount => jumlah worker
 
 Kedua parameter tersebut digunakan untuk menentukan berapa jumlah klien yang ingin dibuat dari simulasi. Total klien yang didapat adalah clientPerWorker * worker.
 
