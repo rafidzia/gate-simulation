@@ -35,10 +35,10 @@ Dalam sistem operasi, terdapat batasan berapa jumlah klien/koneksi yang dapat di
 
 Environment Variable Example
 
-HOST "localhost"
-PORT 2000
-CLIENT_PER_WORKER 1000
-WORKER_COUNT 2
-WAIT_FOR_REPLY true
-GENERATE_DELAY 0
-DEVICE concox
+HOST "localhost" __
+PORT 2000 __
+CLIENT_PER_WORKER 1000 __
+WORKER_COUNT 2 __
+WAIT_FOR_REPLY true __
+GENERATE_DELAY 0 __
+DEVICE concox __
