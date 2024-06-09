@@ -22,15 +22,20 @@ const workerCount = process.env.WORKER_COUNT ? parseInt(process.env.WORKER_COUNT
 
 const waitForReply = String(process.env.WAIT_FOR_REPLY).toLowerCase() == "true" ? true : false
 
-const generateDelay = process.env.GENERATE_DELAY ? parseInt(process.env.GENERATE_DELAY) : 0
+const generateDelay = process.env.GENERATE_DELAY ? parseInt(process.env.GENERATE_DELAY) : 10
+
+const continuous = String(process.env.CONTINUOUS).toLowerCase() == "true" ? true : false
+
+const liveDuration = continuous ? generateDelay * clientPerWorker : 0
 
 const data = getData(device.model)
 let currentData: Data
 
 const download = async () => {
     for await (const x of data) {
+        if (!x) break
         currentData = x
-        sleep(10)
+        await sleep(100)
     }
 }
 download()
@@ -71,12 +76,23 @@ if (cluster.isPrimary) {
         client.on("connect", () => {
             let first = true
             client.write(device.imeiToLoginPacket(imei))
+
+            let stillRunning = true
+
+            if (liveDuration){
+                setTimeout(() => {
+                    client.end()
+                    stillRunning = false
+                }, liveDuration)
+            }
+
             const delay = 10000
             if (waitForReply) {
                 let queuedAmount = 0
                 let lastQueued = Date.now()
                 function asd(customDelay = 0) {
                     setTimeout(() => {
+                        if(!stillRunning) return
                         if (sendAllowed && currentData) {
                             if (first) {
                                 first = false
@@ -108,6 +124,7 @@ if (cluster.isPrimary) {
             } else {
                 function dsa() {
                     setTimeout(() => {
+                        if (!stillRunning) return
                         if (sendAllowed && currentData) {
                             if (first) {
                                 first = false
@@ -179,7 +196,7 @@ if (cluster.isPrimary) {
     const timer = setInterval(() => {
         generateAndcheckImei()
         amount++
-        if (amount == clientPerWorker) {
+        if (amount == clientPerWorker && !continuous) {
             clearInterval(timer)
         }
     }, generateDelay)

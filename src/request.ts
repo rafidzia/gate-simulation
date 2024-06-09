@@ -10,7 +10,7 @@ config()
 let url = "https://kernel-data-raw.s3.ap-southeast-1.amazonaws.com/P6"
 const date = getDateTime()
 
-url += "/" + date.date.slice(0, -2) + (Number(date.date.slice(8)) - 1) + "-" + date.time.slice(0, 2) + ".log"
+url += "/" + date.date.slice(0, -2) + String(Number(date.date.slice(8)) - 1).padStart(2, "0") + "-" + date.time.slice(0, 2) + "-1.log"
 
 
 export async function* getData(...allowedModels: string[]) {
@@ -20,6 +20,7 @@ export async function* getData(...allowedModels: string[]) {
     https.get(url, function (response) {
         let tempString = ""
         response.on('data', async function (chunk) {
+            console.log(chunk)
             response.pause();
             chunk += tempString
             tempString = ""
