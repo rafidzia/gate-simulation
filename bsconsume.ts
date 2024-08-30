@@ -8,6 +8,9 @@
 
 import Jackd from "jackd"
 import cluster from "cluster";
+import { config } from "dotenv"
+
+config()
 
 
 if (cluster.isPrimary) {
@@ -23,7 +26,7 @@ if (cluster.isPrimary) {
         cluster.fork()
     })
 } else {
-    for (let i = 0; i < 2; i++){
+    for (let i = 0; i < 2; i++) {
         (async () => {
             const client = new Jackd()
             await client.connect({
@@ -31,13 +34,13 @@ if (cluster.isPrimary) {
                 port: 11300
             })
             await client.watch("PACKET")
-    
+            let shouldLog = String(process.env.LOG_BEANSTALK).toLowerCase() == "true"
             while (true) {
                 let job = await client.reserve()
-                // console.log(job.payload)
+                shouldLog ? console.log(job) : null
                 client.delete(job.id)
             }
         })()
     }
-    
+
 }

@@ -3,7 +3,6 @@ import https from "https"
 import { Data } from "./type"
 import { sleep, getDateTime } from "./utils"
 import { config } from "dotenv"
-
 config()
 
 
@@ -19,8 +18,9 @@ export async function* getData(...allowedModels: string[]) {
 
     https.get(url, function (response) {
         let tempString = ""
+        let shouldLog = String(process.env.LOG_CHUNK).toLowerCase() == "true"
         response.on('data', async function (chunk) {
-            console.log(chunk)
+            shouldLog ? console.log(chunk) : null
             response.pause();
             chunk += tempString
             tempString = ""

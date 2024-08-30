@@ -1,4 +1,4 @@
-import { createConnection, Socket } from "net"
+import { createConnection } from "net"
 
 import cluster from "cluster"
 import crypto from "crypto"
@@ -7,6 +7,9 @@ import { devices } from "./devices"
 import { Data, masterToWorker, workerToMaster } from "./type";
 import { getData } from "./request";
 import { sleep } from "./utils";
+
+import { config } from "dotenv"
+config()
 
 
 const host = process.env.HOST || "localhost"
@@ -163,7 +166,7 @@ if (cluster.isPrimary) {
 
     function generateAndcheckImei() {
         let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
-        // let imei = 123456789012345
+        // imei = 570391122094081
         process.send!({
             uid: crypto.randomUUID(),
             imei: imei.toString()
