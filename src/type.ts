@@ -7,12 +7,11 @@ export type Data = {
 }
 
 export type workerToMaster = {
-    uid: string,
     imei: string
+    delete: boolean
 }
 
 export type masterToWorker = {
-    uid: string,
     imei: string,
     allowed: boolean
 }

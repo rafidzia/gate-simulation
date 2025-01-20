@@ -45,22 +45,32 @@ download()
 
 if (cluster.isPrimary) {
     const imeiPool: string[] = []
+    const recycledImei: string[] = []
     for (let i = 0; i < workerCount; i++) {
         let worker = cluster.fork()
         worker.on("message", (data: workerToMaster) => {
-            if (imeiPool.indexOf(data.imei) < 0) {
-                imeiPool.push(data.imei)
-                worker.send({
-                    uid: data.uid,
-                    imei: data.imei,
-                    allowed: true
-                })
+            if (data.delete) {
+                let index = imeiPool.indexOf(data.imei)
+                if (index >= 0) {
+                    imeiPool.splice(index, 1)
+                    recycledImei.push(data.imei)
+                }
             } else {
-                worker.send({
-                    uid: data.uid,
-                    imei: data.imei,
-                    allowed: false
-                })
+                if (recycledImei.length > 0) {
+                    data.imei = recycledImei.shift()!
+                }
+                if (imeiPool.indexOf(data.imei) < 0) {
+                    imeiPool.push(data.imei)
+                    worker.send({
+                        imei: data.imei,
+                        allowed: true
+                    })
+                } else {
+                    worker.send({
+                        imei: data.imei,
+                        allowed: false
+                    })
+                }
             }
         })
     }
@@ -82,9 +92,9 @@ if (cluster.isPrimary) {
 
             let stillRunning = true
 
-            if (liveDuration){
+            if (liveDuration) {
                 setTimeout(() => {
-                    client.end()
+                    client.destroy()
                     stillRunning = false
                 }, liveDuration)
             }
@@ -95,7 +105,7 @@ if (cluster.isPrimary) {
                 let lastQueued = Date.now()
                 function asd(customDelay = 0) {
                     setTimeout(() => {
-                        if(!stillRunning) return
+                        if (!stillRunning) return
                         if (sendAllowed && currentData) {
                             if (first) {
                                 first = false
@@ -161,6 +171,10 @@ if (cluster.isPrimary) {
 
         client.on("close", () => {
             console.log("close")
+            process.send!({
+                imei: imei,
+                delete: true
+            })
         })
     }
 
@@ -168,7 +182,6 @@ if (cluster.isPrimary) {
         let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
         // imei = 570391122094081
         process.send!({
-            uid: crypto.randomUUID(),
             imei: imei.toString()
         })
     }
