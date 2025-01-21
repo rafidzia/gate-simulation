@@ -178,12 +178,13 @@ if (cluster.isPrimary) {
         })
     }
 
+    let imei = cluster.worker.id
     function generateAndcheckImei() {
-        let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
-        // imei = 570391122094081
+        // let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
         process.send!({
-            imei: imei.toString()
+            imei: imei.toString().padStart(15, "0")
         })
+        imei = imei + workerCount
     }
 
     setInterval(() => {
