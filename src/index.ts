@@ -182,7 +182,7 @@ if (cluster.isPrimary) {
     function generateAndcheckImei() {
         // let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
         process.send!({
-            imei: imei.toString().padStart(15, "0")
+            imei: 1 + imei.toString().padStart(14, "0")
         })
         imei = imei + workerCount
     }
