@@ -86,73 +86,73 @@ if (cluster.isPrimary) {
         let time: number
 
         const client = createConnection({ host, port })
-        client.on("connect", () => {
-            let first = true
-            client.write(device.imeiToLoginPacket(imei))
+        // client.on("connect", () => {
+        //     let first = true
+        //     client.write(device.imeiToLoginPacket(imei))
 
-            let stillRunning = true
+        //     let stillRunning = true
 
-            if (liveDuration) {
-                setTimeout(() => {
-                    client.destroy()
-                    stillRunning = false
-                }, liveDuration)
-            }
+        //     if (liveDuration) {
+        //         setTimeout(() => {
+        //             client.destroy()
+        //             stillRunning = false
+        //         }, liveDuration)
+        //     }
 
-            const delay = 10000
-            if (waitForReply) {
-                let queuedAmount = 0
-                let lastQueued = Date.now()
-                function asd(customDelay = 0) {
-                    setTimeout(() => {
-                        if (!stillRunning) return
-                        if (sendAllowed && currentData) {
-                            if (first) {
-                                first = false
-                                cb()
-                            }
-                            time = Date.now()
-                            if (!sending) {
-                                sending = true
-                                client.write(device.dataPacket(currentData))
-                                if (queuedAmount > 0) {
-                                    queuedAmount--
-                                    asd(delay / 10)
-                                } else {
-                                    asd()
-                                }
-                            } else {
-                                if (Date.now() - lastQueued > delay) {
-                                    queuedAmount++
-                                    lastQueued = Date.now()
-                                }
-                                asd(delay / 10)
-                            }
-                        } else {
-                            asd(delay / 10)
-                        }
-                    }, customDelay ? customDelay : delay)
-                }
-                asd()
-            } else {
-                function dsa() {
-                    setTimeout(() => {
-                        if (!stillRunning) return
-                        if (sendAllowed && currentData) {
-                            if (first) {
-                                first = false
-                                cb()
-                            }
-                            time = Date.now()
-                            if (!sending) sending = true
-                            client.write(device.dataPacket(currentData))
-                        }
-                        dsa()
-                    }, delay)
-                }
-                dsa()
-            }
-        })
+        //     const delay = 10000
+        //     if (waitForReply) {
+        //         let queuedAmount = 0
+        //         let lastQueued = Date.now()
+        //         function asd(customDelay = 0) {
+        //             setTimeout(() => {
+        //                 if (!stillRunning) return
+        //                 if (sendAllowed && currentData) {
+        //                     if (first) {
+        //                         first = false
+        //                         cb()
+        //                     }
+        //                     time = Date.now()
+        //                     if (!sending) {
+        //                         sending = true
+        //                         client.write(device.dataPacket(currentData))
+        //                         if (queuedAmount > 0) {
+        //                             queuedAmount--
+        //                             asd(delay / 10)
+        //                         } else {
+        //                             asd()
+        //                         }
+        //                     } else {
+        //                         if (Date.now() - lastQueued > delay) {
+        //                             queuedAmount++
+        //                             lastQueued = Date.now()
+        //                         }
+        //                         asd(delay / 10)
+        //                     }
+        //                 } else {
+        //                     asd(delay / 10)
+        //                 }
+        //             }, customDelay ? customDelay : delay)
+        //         }
+        //         asd()
+        //     } else {
+        //         function dsa() {
+        //             setTimeout(() => {
+        //                 if (!stillRunning) return
+        //                 if (sendAllowed && currentData) {
+        //                     if (first) {
+        //                         first = false
+        //                         cb()
+        //                     }
+        //                     time = Date.now()
+        //                     if (!sending) sending = true
+        //                     client.write(device.dataPacket(currentData))
+        //                 }
+        //                 dsa()
+        //             }, delay)
+        //         }
+        //         dsa()
+        //     }
+        // })
 
         client.on("data", (data) => {
             if (sendAllowed && sending) {
