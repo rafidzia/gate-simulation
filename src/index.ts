@@ -150,7 +150,7 @@ if (cluster.isPrimary) {
                             }
                             time = Date.now()
                             if (!sending) sending = true
-                            client.write(device.dataPacket(currentData))
+                            // client.write(device.dataPacket(currentData))
                         }
                         dsa()
                     }, delay)
