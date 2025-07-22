@@ -31,17 +31,21 @@ const continuous = String(process.env.CONTINUOUS).toLowerCase() == "true" ? true
 
 const liveDuration = continuous ? generateDelay * clientPerWorker : 0
 
-const data = getData(device.model)
-let currentData: Data
+// const data = getData(device.model)
+// let currentData: Data
 
-const download = async () => {
-    for await (const x of data) {
-        if (!x) break
-        currentData = x
-        await sleep(100)
-    }
+// const download = async () => {
+//     for await (const x of data) {
+//         if (!x) break
+//         currentData = x
+//         await sleep(100)
+//     }
+// }
+// download()
+
+let currentData = {
+    data: "78785995ffff01190714092f23df00653d070b20459210910000010e690000434d445f3836323739383035313632353332315f30303030303030305f323032355f30375f32305f31365f34375f32345f495f31302e6a7067734d3dfc0d0a",
 }
-download()
 
 if (cluster.isPrimary) {
     const imeiPool: string[] = []
