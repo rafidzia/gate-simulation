@@ -14,7 +14,8 @@ export const devices = {
         },
         loginReplyPacket(data: string, done: () => void) {
             if (data == "7878050110014c4d0d0a") {
-                return Buffer.from("78780a1346060400020bef60b70d0a", "hex")
+                // return Buffer.from("78780a1346060400020bef60b70d0a", "hex")
+                done()
             }
             if (data.indexOf("787812800c0000000056455253494f4e231011e1b50d0a") >= 0) {
                 done()

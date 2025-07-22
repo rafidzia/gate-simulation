@@ -145,6 +145,7 @@ if (cluster.isPrimary) {
                         if (sendAllowed && currentData) {
                             if (first) {
                                 first = false
+                                console.log("start sending data " + imei)
                                 cb()
                             }
                             time = Date.now()
