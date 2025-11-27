@@ -6,6 +6,7 @@ export const devices = {
         model: "x3",
         imeiToLoginPacket(imei: string) {
             const data = "11010" + imei + "20082bc10bec"
+            // const data = "11010" + imei +  "200812c90410"
             return Buffer.from("7878" + data + concox.crc(data) + "0d0a", "hex")
         },
         dataPacket(data: Data) {
@@ -13,14 +14,15 @@ export const devices = {
             return Buffer.from(data.data, "hex")
         },
         loginReplyPacket(data: string, done: () => void) {
-            if (data == "7878050110014c4d0d0a") {
-                // return Buffer.from("78780a1346060400020bef60b70d0a", "hex")
-                done()
-            }
-            if (data.indexOf("787812800c0000000056455253494f4e231011e1b50d0a") >= 0) {
-                done()
-                return Buffer.from("797900332100000000015b56455253494f4e5d4e5433375f47543831305f574141445f56332e315f3232303930372e313631380bed993e0d0a", "hex")
-            }
+            done()
+            // if (data == "787805010001d9dc0d0a") {
+            //     // return Buffer.from("78780a1346060400020bef60b70d0a", "hex")
+            //     done()
+            // }
+            // if (data.indexOf("787812800c0000000056455253494f4e231011e1b50d0a") >= 0) {
+            //     done()
+            //     return Buffer.from("797900332100000000015b56455253494f4e5d4e5433375f47543831305f574141445f56332e315f3232303930372e313631380bed993e0d0a", "hex")
+            // }
         }
     },
     teltonika: {

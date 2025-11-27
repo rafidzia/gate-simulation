@@ -85,7 +85,7 @@ if (cluster.isPrimary) {
 } else {
     let averageTime = 0
     function run(imei: string, cb: () => void) {
-        let sendAllowed = false
+        let sendAllowed = true
         let sending = false
         let time: number
 
@@ -103,7 +103,7 @@ if (cluster.isPrimary) {
                 }, liveDuration)
             }
 
-            const delay = 10000
+            const delay = 5000
             if (waitForReply) {
                 let queuedAmount = 0
                 let lastQueued = Date.now()
@@ -150,7 +150,11 @@ if (cluster.isPrimary) {
                             }
                             time = Date.now()
                             if (!sending) sending = true
+                            // console.log("sending data " + imei)
                             client.write(device.dataPacket(currentData))
+                            // console.log(device.dataPacket(currentData))
+                            // client.write(Buffer.from("78785995ffff01190714092f23df00653d070b20459210910000010e690000434d445f3836323739383035313632353332315f30303030303030305f323032355f30375f32305f31365f34375f32345f495f31302e6a7067734d3dfc0d0a", "hex"))
+
                         }
                         dsa()
                     }, delay)
@@ -187,7 +191,9 @@ if (cluster.isPrimary) {
     function generateAndcheckImei() {
         // let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
         process.send!({
+            // imei: 198765 + imei.toString().padStart(9, "0")
             imei: 1 + imei.toString().padStart(14, "0")
+            // imei: '356320334434552'
         })
         imei = imei + workerCount
     }
