@@ -103,7 +103,7 @@ if (cluster.isPrimary) {
                 }, liveDuration)
             }
 
-            const delay = 5000
+            const delay = 10000
             if (waitForReply) {
                 let queuedAmount = 0
                 let lastQueued = Date.now()
@@ -113,6 +113,7 @@ if (cluster.isPrimary) {
                         if (sendAllowed && currentData) {
                             if (first) {
                                 first = false
+                                console.log("start sending data " + imei)
                                 cb()
                             }
                             time = Date.now()
@@ -128,6 +129,7 @@ if (cluster.isPrimary) {
                             } else {
                                 if (Date.now() - lastQueued > delay) {
                                     queuedAmount++
+                                    console.log(queuedAmount)
                                     lastQueued = Date.now()
                                 }
                                 asd(delay / 10)
@@ -191,8 +193,8 @@ if (cluster.isPrimary) {
     function generateAndcheckImei() {
         // let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
         process.send!({
-            // imei: 198765 + imei.toString().padStart(9, "0")
-            imei: 1 + imei.toString().padStart(14, "0")
+            imei: 298765 + imei.toString().padStart(9, "0")
+            // imei: 1 + imei.toString().padStart(14, "0")
             // imei: '356320334434552'
         })
         imei = imei + workerCount
