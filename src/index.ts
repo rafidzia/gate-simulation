@@ -44,7 +44,8 @@ const liveDuration = continuous ? generateDelay * clientPerWorker : 0
 // download()
 
 let currentData = {
-    data: "78785995ffff01190714092f23df00653d070b20459210910000010e690000434d445f3836323739383035313632353332315f30303030303030305f323032355f30375f32305f31365f34375f32345f495f31302e6a7067734d3dfc0d0a",
+    // data: "78785995ffff01190714092f23df00653d070b20459210910000010e690000434d445f3836323739383035313632353332315f30303030303030305f323032355f30375f32305f31365f34375f32345f495f31302e6a7067734d3dfc0d0a",
+    data: "787822221a0111120002c100a9bc8d0b79095001d01301fe0a0524002b60010000005711720d0a"
 }
 
 if (cluster.isPrimary) {
@@ -186,10 +187,16 @@ if (cluster.isPrimary) {
                 imei: imei,
                 delete: true
             })
+            // if (!continuous) {
+            //     setTimeout(() => {
+            //         generateAndcheckImei()
+            //     }, (Math.random() * 1000) + 100)
+            // }
         })
     }
 
     let imei = cluster.worker.id
+    // + 50000
     function generateAndcheckImei() {
         // let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
         process.send!({
