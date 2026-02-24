@@ -17,6 +17,7 @@ const port = process.env.PORT ? parseInt(process.env.PORT) : 2000
 
 
 // DEVICES CONFIG: key from devices object
+//@ts-ignore
 const device = devices[process.env.DEVICE || "concox"]
 
 // TOTAL CLIENT: clientPerWorker * workerCount
@@ -25,9 +26,11 @@ const workerCount = process.env.WORKER_COUNT ? parseInt(process.env.WORKER_COUNT
 
 const waitForReply = String(process.env.WAIT_FOR_REPLY).toLowerCase() == "true" ? true : false
 
-const generateDelay = process.env.GENERATE_DELAY ? parseInt(process.env.GENERATE_DELAY) : 10
+const generateDelay = process.env.GENERATE_DELAY ? parseInt(process.env.GENERATE_DELAY) : 0
 
 const continuous = String(process.env.CONTINUOUS).toLowerCase() == "true" ? true : false
+
+const startFrom = process.env.START_FROM ? parseInt(process.env.START_FROM) : 0
 
 const liveDuration = continuous ? generateDelay * clientPerWorker : 0
 
@@ -44,8 +47,10 @@ const liveDuration = continuous ? generateDelay * clientPerWorker : 0
 // download()
 
 let currentData = {
-    // data: "78785995ffff01190714092f23df00653d070b20459210910000010e690000434d445f3836323739383035313632353332315f30303030303030305f323032355f30375f32305f31365f34375f32345f495f31302e6a7067734d3dfc0d0a",
-    data: "787822221a0111120002c100a9bc8d0b79095001d01301fe0a0524002b60010000005711720d0a"
+    data: "78785995ffff01190714092f23df00653d070b20459210910000010e690000434d445f3836323739383035313632353332315f30303030303030305f323032355f30375f32305f31365f34375f32345f495f31302e6a7067734d3dfc0d0a",
+    // data: "787822221a0111120002c100a9bc8d0b79095001d01301fe0a0524002b60010000005711720d0a"
+    // data: "00000000000000f38e030000019b8d19a210003fb517fefc4da409001e004e1100000001000b000600ef0100f00100150500010000716401070100030042365b00430fea00440000000200f10000c742001002bd77c2000000000000019b8d19a9e0003fb517fefc4da409001e004e11000000ef000b000600ef0000f00000150500010000716401070100030042353b00430fec00440000000200f10000c742001002bd77c2000000000000019b8d19a9ea003fb517fefc4da409001e004e11000000f0000b000600ef0000f00000150500010000716401070100030042353b00430fec00440000000200f10000c742001002bd77c200000000030000680a"
+    // data: "00000000000000538e010000019b8d19b980003fb42621fc474401002401661200300000000b000600ef0100f001001504000101007164010701000300426f2d00430fc000440000000200f10000c742001001686cb600000000010000cc55"
 }
 
 if (cluster.isPrimary) {
@@ -86,7 +91,7 @@ if (cluster.isPrimary) {
 } else {
     let averageTime = 0
     function run(imei: string, cb: () => void) {
-        let sendAllowed = true
+        let sendAllowed = false
         let sending = false
         let time: number
 
@@ -107,6 +112,9 @@ if (cluster.isPrimary) {
             const delay = 10000
             if (waitForReply) {
                 let queuedAmount = 0
+                setInterval(() => {
+                    console.log(queuedAmount)
+                }, 10000)
                 let lastQueued = Date.now()
                 function asd(customDelay = 0) {
                     setTimeout(() => {
@@ -195,7 +203,7 @@ if (cluster.isPrimary) {
         })
     }
 
-    let imei = cluster.worker.id
+    let imei = (cluster.worker?.id || 0) + startFrom
     // + 50000
     function generateAndcheckImei() {
         // let imei = Math.floor(100000000000000 + Math.random() * 900000000000000)
@@ -230,11 +238,15 @@ if (cluster.isPrimary) {
     })
 
     let amount = 0
-    const timer = setInterval(() => {
+    if (generateDelay > 0) {
+        const timer = setInterval(() => {
+            generateAndcheckImei()
+            amount++
+            if (amount == clientPerWorker && !continuous) {
+                clearInterval(timer)
+            }
+        }, generateDelay)
+    } else {
         generateAndcheckImei()
-        amount++
-        if (amount == clientPerWorker && !continuous) {
-            clearInterval(timer)
-        }
-    }, generateDelay)
+    }
 }
